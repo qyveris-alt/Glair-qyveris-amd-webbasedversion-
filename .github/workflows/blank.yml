@@ -42,14 +42,13 @@ jobs:
           custom_template/debug=""
           EOF
 
-      # Een stabiele compiler die de engine al ingebouwd heeft (geen wget nodig)
-      - name: Godot Android Export
-        uses: chickenmesh/godot-export@v2.1.2
+      # De officiële Godot-omgeving waar alles al in zit (geen downloads nodig!)
+      - name: Export Godot Project to Web
+        uses: barichello/godot-ci@v3.5.3
         with:
-          godot_version: 3.5.3
-          export_preset: Web
-          project_path: .
-          output_path: build/web
+          relative_project_path: ./
+          export_preset_name: Web
+          export_path: build/web/index.html
 
       # Publiceer de gemaakte webversie naar GitHub Pages
       - name: Deploy to GitHub Pages
