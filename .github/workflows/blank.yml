@@ -17,22 +17,24 @@ jobs:
       - name: Checkout Project
         uses: actions/checkout@v4
 
-      # Installeert de benodigde zip-software op de Linux-server
+      # Installeert unzip op de Linux-server
       - name: Install Dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y unzip wget
 
-      # Downloadt de officiële Godot 3.5.3 editor en export-templates direct
+      # Downloadt NU WEL de exacte bestanden direct van de Godot-servers
       - name: Download Godot Engine
         run: |
           wget https://tuxfamily.org
           wget https://tuxfamily.org
+          
+          # Uitpakken van de editor
           unzip Godot_v3.5.3-stable_linux_headless.64.zip
           mv Godot_v3.5.3-stable_linux_headless.64 godot
           chmod +x godot
           
-          # Richt de exportmappen in voor de templates
+          # Uitpakken van de webtemplates naar de juiste systeemmap
           mkdir -p ~/.local/share/godot/export_templates/3.5.3.stable
           unzip Godot_v3.5.3-stable_export_templates.tpz -d ~/.local/share/godot/export_templates/
           mv ~/.local/share/godot/export_templates/templates/* ~/.local/share/godot/export_templates/3.5.3.stable/
