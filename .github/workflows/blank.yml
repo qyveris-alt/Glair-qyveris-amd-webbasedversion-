@@ -17,29 +17,7 @@ jobs:
       - name: Checkout Project
         uses: actions/checkout@v4
 
-      # Installeert unzip op de Linux-server
-      - name: Install Dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y unzip wget
-
-      # Downloadt NU WEL de exacte bestanden direct van de Godot-servers
-      - name: Download Godot Engine
-        run: |
-          wget https://tuxfamily.org
-          wget https://tuxfamily.org
-          
-          # Uitpakken van de editor
-          unzip Godot_v3.5.3-stable_linux_headless.64.zip
-          mv Godot_v3.5.3-stable_linux_headless.64 godot
-          chmod +x godot
-          
-          # Uitpakken van de webtemplates naar de juiste systeemmap
-          mkdir -p ~/.local/share/godot/export_templates/3.5.3.stable
-          unzip Godot_v3.5.3-stable_export_templates.tpz -d ~/.local/share/godot/export_templates/
-          mv ~/.local/share/godot/export_templates/templates/* ~/.local/share/godot/export_templates/3.5.3.stable/
-
-      # Maakt handmatig de ontbrekende web-instellingen aan
+      # Maakt automatisch de missende export-instellingen aan zonder fouten
       - name: Force Create Export Presets File
         run: |
           mkdir -p build/web
@@ -64,12 +42,15 @@ jobs:
           custom_template/debug=""
           EOF
 
-      # Compileert de game direct via de handmatig geïnstalleerde engine
-      - name: Execute Godot Compilation
-        run: |
-          ./godot --export "Web" build/web/index.html
-
-      # Publiceer de gemaakte webversie naar GitHub Pages
+      # De betrouwbare compiler die het downloaden en uitpakken intern regelt
+      - name: Export Godot Project to Web
+        uses: firebelley/godot-export@v5.2.1
+        with:
+          godot_executable_download_url: https://github.com
+          godot_export_templates_download_url: https://github.com
+          relative_project_path: ./
+          export_preset_name: Web  
+          
       - name: Deploy to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4
         with:
