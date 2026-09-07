@@ -1,0 +1,31 @@
+name: "Export Game to Web"
+on:
+  push:
+    branches:
+      - main  # Verander dit naar 'master' als je hoofd-branch zo heet
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+jobs:
+  export_web:
+    runs-on: ubuntu-latest
+    name: Export Web Job
+    steps:
+      - name: Checkout Template
+        uses: actions/checkout@v4
+
+      - name: Export Godot Project
+        uses: firebelley/godot-export@v5.2.1
+        with:
+          godot_executable_download_url: https://tuxfamily.org
+          godot_export_templates_download_url: https://tuxfamily.org
+          relative_project_path: ./
+          export_preset_name: Web  # Dit moet exact overeenkomen met de export-preset in het project
+          
+      - name: Deploy to GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: build/web # De map waar de gecompileerde bestanden worden neergezet
