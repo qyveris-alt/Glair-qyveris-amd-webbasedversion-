@@ -13,6 +13,10 @@ jobs:
   export_web:
     runs-on: ubuntu-latest
     name: Export Web Job
+    # We dwingen de server om direct in de officiële Godot-omgeving op te starten
+    container:
+      image: barichello/godot-ci:3.5.3
+    
     steps:
       - name: Checkout Project
         uses: actions/checkout@v4
@@ -42,13 +46,10 @@ jobs:
           custom_template/debug=""
           EOF
 
-      # De officiële Godot-omgeving waar alles al in zit (geen downloads nodig!)
-      - name: Export Godot Project to Web
-        uses: barichello/godot-ci@v3.5.3
-        with:
-          relative_project_path: ./
-          export_preset_name: Web
-          export_path: build/web/index.html
+      # We roepen de Godot-engine nu RECHTSTREEKS aan met een Linux-commando (geen vage plug-ins nodig!)
+      - name: Raw Godot Web Export
+        run: |
+          godot -v --export "Web" build/web/index.html
 
       # Publiceer de gemaakte webversie naar GitHub Pages
       - name: Deploy to GitHub Pages
