@@ -17,7 +17,7 @@ jobs:
       - name: Checkout Project
         uses: actions/checkout@v4
 
-      # Maakt automatisch de missende export-instellingen aan zonder fouten
+      # Maakt handmatig de ontbrekende web-instellingen aan
       - name: Force Create Export Presets File
         run: |
           mkdir -p build/web
@@ -42,13 +42,16 @@ jobs:
           custom_template/debug=""
           EOF
 
-      # De betrouwbare compiler, maar nu zonder handmatige downloadlinks om de 7z-fout te voorkomen
-      - name: Export Godot Project to Web
-        uses: firebelley/godot-export@v5.2.1
+      # Een stabiele compiler die de engine al ingebouwd heeft (geen wget nodig)
+      - name: Godot Android Export
+        uses: chickenmesh/godot-export@v2.1.2
         with:
-          relative_project_path: ./
-          export_preset_name: Web  
-          
+          godot_version: 3.5.3
+          export_preset: Web
+          project_path: .
+          output_path: build/web
+
+      # Publiceer de gemaakte webversie naar GitHub Pages
       - name: Deploy to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4
         with:
