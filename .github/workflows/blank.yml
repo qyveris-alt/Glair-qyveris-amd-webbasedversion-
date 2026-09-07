@@ -13,13 +13,29 @@ jobs:
   export_web:
     runs-on: ubuntu-latest
     name: Export Web Job
-    # We dwingen de server om direct in de officiële Godot-omgeving op te starten
-    container:
-      image: barichello/godot-ci:3.5.3
-    
     steps:
       - name: Checkout Project
         uses: actions/checkout@v4
+
+      # Installeert de benodigde zip-software op de Linux-server
+      - name: Install Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y unzip wget
+
+      # Downloadt de officiële Godot 3.5.3 editor en export-templates direct
+      - name: Download Godot Engine
+        run: |
+          wget https://tuxfamily.org
+          wget https://tuxfamily.org
+          unzip Godot_v3.5.3-stable_linux_headless.64.zip
+          mv Godot_v3.5.3-stable_linux_headless.64 godot
+          chmod +x godot
+          
+          # Richt de exportmappen in voor de templates
+          mkdir -p ~/.local/share/godot/export_templates/3.5.3.stable
+          unzip Godot_v3.5.3-stable_export_templates.tpz -d ~/.local/share/godot/export_templates/
+          mv ~/.local/share/godot/export_templates/templates/* ~/.local/share/godot/export_templates/3.5.3.stable/
 
       # Maakt handmatig de ontbrekende web-instellingen aan
       - name: Force Create Export Presets File
@@ -46,10 +62,10 @@ jobs:
           custom_template/debug=""
           EOF
 
-      # We roepen de Godot-engine nu RECHTSTREEKS aan met een Linux-commando (geen vage plug-ins nodig!)
-      - name: Raw Godot Web Export
+      # Compileert de game direct via de handmatig geïnstalleerde engine
+      - name: Execute Godot Compilation
         run: |
-          godot -v --export "Web" build/web/index.html
+          ./godot --export "Web" build/web/index.html
 
       # Publiceer de gemaakte webversie naar GitHub Pages
       - name: Deploy to GitHub Pages
